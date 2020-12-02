@@ -12,7 +12,7 @@ def open_model(filename):
     with open(filename, 'rb') as f:
         return pickle.load(f)
 
-def synth_model(model):
+def synth_model(model, build=True):
     """ Return conifer model given scikit model """
     # Create a conifer config
     cfg = conifer.backends.vivadohls.auto_config()
@@ -26,9 +26,19 @@ def synth_model(model):
     conif_model.compile()
      
     # Synthesize the model
-    conif_model.build()
+    if build: conif_model.build()
 
     return conif_model
+
+def get_stats(model, X, Y):
+    """ 
+    Returns false positive rates, true positive rates, 
+    and area under curve for given model. 
+    """
+    Y_pred = model.decision_function(X)
+    fpr, tpr, _ = sklearn.metrics.roc_curve(Y, Y_pred)
+    auc = sklearn.metrics.auc(fpr, tpr) 
+    return dict(zip(["fpr", "tpr", "auc"], [fpr, tpr, auc]))
 
 def load_params_used(filename):
     with open(filename, "r") as f:
@@ -90,3 +100,32 @@ def load_split_data(data="../data"):
     for i in ("X_train", "Y_train", "X_test", "Y_test"):
         res.append(np.load(f"{data}/{i}.npy"))
     return res
+
+
+def make_plot(
+    results, 
+    colors=['aqua', 'darkorange', 'cornflowerblue', 'red', 'green'],
+    linewidth=2,
+    plots_folder='../plots'
+    ):
+    """
+    Results is a dictionary where the key is the name of the model and the value is a
+    dictionary with the keys fpr, tpr, auc. Plots these results with pretty colors.
+    """
+    plt.figure()
+ 
+    c = 0
+    for name, stats in results.items():
+        plt.plot(stats["fpr"], stats["tpr"], color=colors[c], 
+            lw=linewidth, label=f"{name} (area = {stats['auc']})")
+        c = (c + 1) % len(colors)
+ 
+    plt.semilogy()
+    plt.xlim([0.0, 1.0])
+    plt.ylim([1e-3, 1.0])
+    plt.xlabel('Signal Efficiency')
+    plt.ylabel('Background Efficiency')
+    plt.title('ROC Curves for BDT Tau Lepton Classifier')
+    plt.legend(loc="upper left")
+#    plt.savefig(f'{plots_folder}/{results.keys[0]}Comp.png', bbox_inches='tight')
+    plt.show()

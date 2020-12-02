@@ -5,36 +5,7 @@ import sklearn
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
-
-def make_plot(
-    results, 
-    colors=['aqua', 'darkorange', 'cornflowerblue', 'red', 'green'],
-    linewidth=2,
-    plots_folder='./plots/plot.png'
-    ):
-    """
-    Results is a dictionary where the key is the name of the model and the value is a
-    dictionary with the keys fpr, tpr, auc. Plots these results with pretty colors.
-    """
-    plt.figure()
- 
-    c = 0
-    for name, stats in results.items():
-        plt.plot(stats["fpr"], stats["tpr"], color=colors[c], 
-            lw=linewidth, label=f"{name} (area = {stats['auc']})")
-        c = (c + 1) % len(colors)
- 
-    plt.semilogy()
-    plt.xlim([0.0, 1.0])
-    plt.ylim([1e-3, 1.0])
-    plt.xlabel('Signal Efficiency')
-    plt.ylabel('Background Efficiency')
-    plt.title('ROC Curves for BDT Tau Lepton Classifier')
-    plt.legend(loc="upper left")
-    plt.savefig(plots_folder, bbox_inches='tight')
-    plt.show()
-
+from utils import make_plot
 
 def ada_grad_conif_compare():
     grad_model = open_model("../GradientBoosted_params5_trees50_depth2.pkl")

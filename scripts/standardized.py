@@ -16,13 +16,16 @@ def train_model(n_estimators=100, max_depth=4, models_path="../models", images_p
             model = pickle.load(model_file)
     else:
         model = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=4)
+        model.fit(X_train, Y_train)
         with open(model_path, "wb+") as model_file:
             pickle.dump(model, model_file)
 
-    model.fit(X_train, Y_train)
-    
-    metrics.plot_roc_curve(model, X_test, Y_test)
-    plt.show()    
+    conif_model = utils.synth_model(model, build=False)
+    results = { 
+        f"Gradient BDT Est {n_estimators} D{max_depth}": utils.get_stats(model, X_test, Y_test),
+        f"Conifer Gradient BDT": utils.get_stats(conif_model, X_test, Y_test)
+    }
+    utils.make_plot(results)
 
 def main():
     train_model()
