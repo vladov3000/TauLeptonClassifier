@@ -1,5 +1,0 @@
-reco_pt
-reco_eta
-reco_frac2
-reco_max1
-reco_max2

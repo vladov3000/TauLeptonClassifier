@@ -1,3 +1,5 @@
 *.csv
 .ipynb_checkpoints
 tauTrees
+*.*.swp
+__pycache__
