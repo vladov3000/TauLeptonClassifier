@@ -5,6 +5,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 import os
 import pandas as pd
 import pickle
+import matplotlib.pyplot as plt
  
 def train_model(n_estimators=100, max_depth=4, models_path="../models", images_path="../images"):
     X_train, Y_train, X_test, Y_test = utils.load_split_data()
@@ -20,10 +21,8 @@ def train_model(n_estimators=100, max_depth=4, models_path="../models", images_p
 
     model.fit(X_train, Y_train)
     
-    fig, ax = plt.subplots()
-    metrics.plot_roc_curve(model, X_test, Y_test, ax=ax)
+    metrics.plot_roc_curve(model, X_test, Y_test)
     plt.show()    
-    plt.savefig(f"{images_path}/scaled_{n_estimators}_{max_depth}_model.png")
 
 def main():
     train_model()
