@@ -5,15 +5,14 @@ import sklearn
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from utils import make_plot
+from utils import *
 
 def ada_grad_conif_compare():
-    grad_model = open_model("../GradientBoosted_params5_trees50_depth2.pkl")
-    ada_model = open_model("../params5_trees800_depth4.pkl")
-    conif_model = synth_model(grad_model)
+    grad_model = open_model("../models/GradientBoosted_params5_trees50_depth2.pkl")
+    ada_model = open_model("../models/params5_trees800_depth4.pkl")
+    conif_model = synth_model(grad_model, bit_width='ap_fixed<11,6>', build=False)
 
-    _, X, Y = load_data("../sig.csv", "../bg.csv", load_params_used("../params5_used.txt"))
-    X_train, Y_train, X_test, Y_test = split_data(X, Y)
+    _, _, X_test, Y_test = load_split_data() 
 
     results = {
         "Gradient BDT": get_stats(grad_model, X_test, Y_test),
@@ -44,8 +43,8 @@ def plot_bitwidths():
     #plt.show()
 
 def main():
-    # ada_grad_conif_compare()
-    plot_bitwidths()
+    ada_grad_conif_compare()
+    # plot_bitwidths()
 
 if __name__=="__main__":
     main() 

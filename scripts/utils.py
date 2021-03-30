@@ -12,7 +12,7 @@ def open_model(filename):
     with open(filename, 'rb') as f:
         return pickle.load(f)
 
-def synth_model(model, build=True):
+def synth_model(model, bit_width='ap_fixed<18,8>', build=True):
     """ Return conifer model given scikit model """
     # Create a conifer config
     cfg = conifer.backends.vivadohls.auto_config()
@@ -20,6 +20,7 @@ def synth_model(model, build=True):
     # Set the output directory to something unique
     cfg['OutputDir'] = 'projects/prj_{}'.format(int(datetime.datetime.now().timestamp()))
     cfg['XilinxPart'] = 'xc7vx690tffg1761-2'
+    cfg['Precision'] = bit_width
     
     # Create and compile the model
     conif_model = conifer.model(model, conifer.converters.sklearn, conifer.backends.vivadohls, cfg)

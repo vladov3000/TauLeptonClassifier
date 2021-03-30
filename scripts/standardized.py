@@ -12,6 +12,7 @@ def train_model(n_estimators=100, max_depth=4, models_path="../models", images_p
     
     model_path = f"{models_path}/scaled_{n_estimators}_{max_depth}_model.pkl"
     if os.path.exists(model_path):
+        print("Using existing model")
         with open(model_path, "rb") as model_file:
             model = pickle.load(model_file)
     else:
@@ -20,7 +21,8 @@ def train_model(n_estimators=100, max_depth=4, models_path="../models", images_p
         with open(model_path, "wb+") as model_file:
             pickle.dump(model, model_file)
 
-    conif_model = utils.synth_model(model, build=False)
+    conif_model = utils.synth_model(model, bit_width='ap_fixed<11,6>', build=False)
+    profile_fig = conif_model.profile()
     results = { 
         f"Gradient BDT Est {n_estimators} D{max_depth}": utils.get_stats(model, X_test, Y_test),
         f"Conifer Gradient BDT": utils.get_stats(conif_model, X_test, Y_test)
